@@ -8,3 +8,4 @@ export { config as dotEnvConfig } from "https://deno.land/x/dotenv@v3.1.0/mod.ts
 export * from "https://deno.land/x/discordeno_cache_plugin@0.0.21/mod.ts";
 export * from "https://deno.land/x/discordeno_permissions_plugin@0.0.15/mod.ts";
 export * from "https://deno.land/x/discordeno_helpers_plugin@0.0.8/mod.ts";
+export * from "https://deno.land/x/discordeno_fileloader_plugin@v1.0.1/mod.ts";
