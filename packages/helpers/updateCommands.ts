@@ -39,7 +39,7 @@ export async function updateApplicationCommands(scope?: "Guild" | "Global" | "De
           type: command.type,
           options: command.options ? command.options : undefined,
         });
-        log.info(`Added command ${command.name} to the guild application`);
+        log.info(`Added command ${command.name} to the development application`);
       }
     }
   }
