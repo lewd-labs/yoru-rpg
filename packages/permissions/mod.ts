@@ -1,9 +1,9 @@
-import {ICommand} from "../../interfaces/bot/command.ts";
-import {DiscordenoInteraction, validatePermissions} from "../../deps.ts";
+import { ICommand } from "../../interfaces/bot/command.ts";
+import { DiscordenoInteraction, validatePermissions } from "../../deps.ts";
 
 export default async function hasPermissionLevel(
-    command: ICommand,
-    payload: DiscordenoInteraction,
+  command: ICommand,
+  payload: DiscordenoInteraction,
 ) {
   // This command doesnt require a perm level so allow the command.
   if (!command.permissionLevels) return true;
@@ -24,19 +24,19 @@ export default async function hasPermissionLevel(
 }
 
 export const PermissionLevelHandlers: Record<
-    keyof typeof PermissionLevels,
-    (
-        payload: DiscordenoInteraction,
-        command: ICommand,
-    ) => boolean | Promise<boolean>
-    > = {
+  keyof typeof PermissionLevels,
+  (
+    payload: DiscordenoInteraction,
+    command: ICommand,
+  ) => boolean | Promise<boolean>
+> = {
   MEMBER: () => true,
   MODERATOR: (payload: DiscordenoInteraction) =>
-      Boolean(payload.member?.permissions) &&
-      validatePermissions(payload.member!.permissions!, ["MANAGE_GUILD"]),
+    Boolean(payload.member?.permissions) &&
+    validatePermissions(payload.member!.permissions!, ["MANAGE_GUILD"]),
   ADMIN: (payload: DiscordenoInteraction) =>
-      Boolean(payload.member?.permissions) &&
-      validatePermissions(payload.member!.permissions!, ["ADMINISTRATOR"]),
+    Boolean(payload.member?.permissions) &&
+    validatePermissions(payload.member!.permissions!, ["ADMINISTRATOR"]),
   SERVER_OWNER: () => false,
   BOT_SUPPORT: () => false,
   BOT_DEVS: () => false,

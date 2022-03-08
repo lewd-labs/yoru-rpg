@@ -60,8 +60,8 @@ export async function updateApplicationCommands(scope?: "Guild" | "Global" | "De
       "Updating Guild Commands, this takes up to 1 minute to take effect...",
     );
     log.info(`Commands added: ${perGuildCommands.join(", ")}`);
-     Bot.guilds.forEach((guild) => {
-       upsertApplicationCommands(Bot, perGuildCommands, guild.id);
+    Bot.guilds.forEach((guild) => {
+      upsertApplicationCommands(Bot, perGuildCommands, guild.id);
     });
   }
 

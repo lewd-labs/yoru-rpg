@@ -1,6 +1,6 @@
-import {ApplicationCommandOption, ApplicationCommandTypes, DiscordenoInteraction, Permission} from "../../deps.ts";
+import { ApplicationCommandOption, ApplicationCommandTypes, DiscordenoInteraction, Permission } from "../../deps.ts";
 import { BotClient } from "@bot";
-import {PermissionLevelHandlers} from "../../packages/permissions/mod.ts";
+import { PermissionLevelHandlers } from "../../packages/permissions/mod.ts";
 
 export interface ICommand {
   /** The name of this command. */
@@ -30,11 +30,11 @@ export interface ICommand {
   /** Whether this slash command should be enabled right now. Defaults to true. */
   enabled?: boolean;
   permissionLevels?:
-      | (keyof typeof PermissionLevelHandlers)[]
-      | ((
+    | (keyof typeof PermissionLevelHandlers)[]
+    | ((
       data: DiscordenoInteraction,
       command: ICommand,
-  ) => boolean | Promise<boolean>);
+    ) => boolean | Promise<boolean>);
   botServerPermissions?: Permission[];
   botChannelPermissions?: Permission[];
   userServerPermissions?: Permission[];
