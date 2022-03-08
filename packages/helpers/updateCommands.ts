@@ -23,7 +23,6 @@ export async function updateApplicationCommands(scope?: "Guild" | "Global" | "De
           type: command.type,
           options: command.options ? command.options : undefined,
         });
-        log.info(`Added command ${command.name} to the guild application`);
       } else if (command.scope === "Global") {
         globalCommands.push({
           name: command.name,
@@ -31,7 +30,6 @@ export async function updateApplicationCommands(scope?: "Guild" | "Global" | "De
           type: command.type,
           options: command.options ? command.options : undefined,
         });
-        log.info(`Added command ${command.name} to the global application`);
       } else if (command.scope === "Development") {
         developmentCommands.push({
           name: command.name,
@@ -39,7 +37,6 @@ export async function updateApplicationCommands(scope?: "Guild" | "Global" | "De
           type: command.type,
           options: command.options ? command.options : undefined,
         });
-        log.info(`Added command ${command.name} to the development application`);
       }
     }
   }
@@ -50,6 +47,7 @@ export async function updateApplicationCommands(scope?: "Guild" | "Global" | "De
     log.info(
       "Updating Global Commands, this takes up to 1 hour to take effect...",
     );
+    log.info(`Commands added: ${globalCommands.join(", ")}`);
     await Bot.helpers.upsertApplicationCommands(globalCommands).catch(
       log.error,
     );
@@ -61,6 +59,7 @@ export async function updateApplicationCommands(scope?: "Guild" | "Global" | "De
     log.info(
       "Updating Guild Commands, this takes up to 1 minute to take effect...",
     );
+    log.info(`Commands added: ${perGuildCommands.join(", ")}`);
      Bot.guilds.forEach((guild) => {
        upsertApplicationCommands(Bot, perGuildCommands, guild.id);
     });
@@ -73,6 +72,7 @@ export async function updateApplicationCommands(scope?: "Guild" | "Global" | "De
     log.info(
       "Updating Development Commands, this takes up to 1 minute to take effect...",
     );
+    log.info(`Commands added: ${developmentCommands.join(", ")}`);
     upsertApplicationCommands(Bot, developmentCommands, configs.devGuildId).catch(
       log.error,
     );
