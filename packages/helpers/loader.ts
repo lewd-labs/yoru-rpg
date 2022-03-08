@@ -10,7 +10,7 @@ export async function importDirectory(path: string) {
   try {
     path = path.replaceAll("\\", "/");
     const files = Deno.readDirSync(Deno.realPathSync(path));
-    const folder = path.substring(path.indexOf("/bot/") + 5);
+    const folder = path.substring(path.indexOf("/bot/"));
 
     if (!folder.includes("/")) log.info(`Loading ${folder}...`);
 
