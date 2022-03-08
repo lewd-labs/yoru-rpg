@@ -6,8 +6,8 @@ import { Bot } from "@bot";
  * @param command Command to register.
  */
 export function createCommand(command: ICommand): void {
-  if (command.devOnly === undefined) {
-    command.devOnly = true;
+  if (command.scope === undefined) {
+    command.scope = "Development";
   }
   Bot.commands.set(command.name, command);
 }

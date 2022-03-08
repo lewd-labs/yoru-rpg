@@ -6,7 +6,6 @@ createCommand({
   name: "ping",
   description: "Ping the Bot!",
   type: ApplicationCommandTypes.ChatInput,
-  devOnly: true,
   execute: async (Bot, interaction) => {
     const ping = Date.now() - snowflakeToTimestamp(interaction.id);
     await Bot.helpers.sendInteractionResponse(

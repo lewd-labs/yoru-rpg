@@ -1,16 +1,18 @@
 import { Bot } from "../../bot.ts";
 import { log } from "../utils/log/logger.ts";
 import { MakeRequired } from "https://deno.land/x/discordeno@13.0.0-rc20/types/util.ts";
-import { EditGlobalApplicationCommand, upsertApplicationCommands } from "@deps";
+import { EditGlobalApplicationCommand, upsertApplicationCommands } from "../../deps.ts";
 import { DiscordenoGuild } from "https://deno.land/x/discordeno@13.0.0-rc20/transformers/guild.ts";
+import { configs } from "../../configs.ts";
 
 /**
  * Updates the command information in the discord api
  * @param scope The scope of the command | options are "global" or "guild"
  */
-export async function updateApplicationCommands(scope?: "Guild" | "Global") {
+export async function updateApplicationCommands(scope?: "Guild" | "Global" | "Development") {
   const globalCommands: MakeRequired<EditGlobalApplicationCommand, "name">[] = [];
   const perGuildCommands: MakeRequired<EditGlobalApplicationCommand, "name">[] = [];
+  const developmentCommands: MakeRequired<EditGlobalApplicationCommand, "name">[] = [];
 
   for (const command of Bot.commands.values()) {
     if (command.scope) {
@@ -21,6 +23,7 @@ export async function updateApplicationCommands(scope?: "Guild" | "Global") {
           type: command.type,
           options: command.options ? command.options : undefined,
         });
+        log.info(`Added command ${command.name} to the guild application`);
       } else if (command.scope === "Global") {
         globalCommands.push({
           name: command.name,
@@ -28,16 +31,21 @@ export async function updateApplicationCommands(scope?: "Guild" | "Global") {
           type: command.type,
           options: command.options ? command.options : undefined,
         });
-      } else {
-        perGuildCommands.push({
+        log.info(`Added command ${command.name} to the global application`);
+      } else if (command.scope === "Development") {
+        developmentCommands.push({
           name: command.name,
           description: command.description,
           type: command.type,
           options: command.options ? command.options : undefined,
         });
+        log.info(`Added command ${command.name} to the guild application`);
       }
     }
   }
+  /**
+   * Updates the global application commands
+   */
   if (globalCommands.length && (scope === "Global" || scope === undefined)) {
     log.info(
       "Updating Global Commands, this takes up to 1 hour to take effect...",
@@ -46,12 +54,28 @@ export async function updateApplicationCommands(scope?: "Guild" | "Global") {
       log.error,
     );
   }
-
+  /**
+   * Updates the guild application commands
+   */
   if (perGuildCommands.length && (scope === "Guild" || scope === undefined)) {
     log.info(
       "Updating Guild Commands, this takes up to 1 minute to take effect...",
     );
-    Bot.guilds.forEach((guild) => upsertApplicationCommands(Bot, perGuildCommands, guild.id));
+     Bot.guilds.forEach((guild) => {
+       upsertApplicationCommands(Bot, perGuildCommands, guild.id);
+    });
+  }
+
+  /**
+   * Update the development commands
+   */
+  if (developmentCommands.length && (scope === "Development" || scope === undefined)) {
+    log.info(
+      "Updating Development Commands, this takes up to 1 minute to take effect...",
+    );
+    upsertApplicationCommands(Bot, developmentCommands, configs.devGuildId).catch(
+      log.error,
+    );
   }
 }
 

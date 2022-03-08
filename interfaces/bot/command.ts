@@ -8,10 +8,8 @@ export interface ICommand {
   description: string;
   /** The type of command this is. */
   type: ApplicationCommandTypes;
-  /** Whether this command is for the dev server only. */
-  devOnly?: boolean;
   /** Defaults to `Guild` */
-  scope?: "Global" | "Guild";
+  scope?: "Global" | "Guild" | "Development";
   /** The options for this command */
   options?: ApplicationCommandOption[];
   /** Subcommand options */
