@@ -26,7 +26,7 @@ export async function slashLogWebhook(
       "Guild",
       payload.guildId?.toString() || "Guild ID unavailable",
       true,
-    );
+    ).setTimestamp();
 
   try {
     await bot.helpers
