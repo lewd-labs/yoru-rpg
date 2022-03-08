@@ -23,7 +23,7 @@ export async function importDirectory(path: string) {
        paths.push(
            `import "${Deno.mainModule.substring(0, Deno.mainModule.lastIndexOf("/"))}/${
                currentPath.substring(
-                   currentPath.indexOf("bot/"),
+                   currentPath.indexOf("bot"),
                )
            }#${uniqueFilePathCounter}";`,
        );
@@ -36,6 +36,7 @@ export async function importDirectory(path: string) {
    uniqueFilePathCounter++;
  } catch (error) {
    log.error(error);
+   Deno.exit(1);
  }
 }
 
@@ -52,5 +53,6 @@ export async function fileLoader() {
    paths = [];
  } catch (error) {
    log.error(error);
+   Deno.exit(1);
  }
 }
