@@ -1,0 +1,15 @@
+{
+  "imports": {
+    "/": "./",
+    "./": "./",
+    "@bot": "./bot.ts",
+    "@discordeno": "https://deno.land/x/discordeno@13.0.0-rc18/mod.ts",
+    "@mongodb": "https://deno.land/x/mongo@v0.29.0/mod.ts",
+    "@database": "./packages/database/mod.ts",
+    "@deps": "./deps.ts",
+    "@utils": "./packages/mod.ts",
+    "@configs": "./configs.ts",
+    "@packages": "./packages/mod.ts",
+    "@interfaces": "./interfaces/mod.ts"
+  }
+}
