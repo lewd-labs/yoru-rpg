@@ -1,7 +1,6 @@
 // deno-lint-ignore-file no-explicit-any
 
 import { bold, cyan, gray, italic, red, yellow } from "../../../deps.ts";
-import { configs } from "../../../configs.ts";
 
 export enum Loglevels {
   Debug,
@@ -35,9 +34,6 @@ export function logger({
   logLevel?: Loglevels;
   name?: string;
 } = {}) {
-  // Nothing will be logged to the console for production. *Will change later with something better.
-  if (!configs.development_mode) return;
-
   function log(level: Loglevels, ...args: any[]) {
     if (level < logLevel) return;
 

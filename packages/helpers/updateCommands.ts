@@ -72,7 +72,6 @@ export async function updateApplicationCommands(scope?: "Guild" | "Global" | "De
     log.info(
       "Updating Development Commands, this takes up to 1 minute to take effect...",
     );
-    log.info(`Commands added: ${developmentCommands.join(", ")}`);
     upsertApplicationCommands(Bot, developmentCommands, configs.devGuildId).catch(
       log.error,
     );

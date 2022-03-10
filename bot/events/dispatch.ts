@@ -2,36 +2,36 @@ import { Bot } from "../../bot.ts";
 import { snowflakeToBigint } from "https://deno.land/x/discordeno@13.0.0-rc20/util/bigint.ts";
 import { log } from "../../packages/utils/log/logger.ts";
 import { delay } from "https://deno.land/x/discordeno@13.0.0-rc20/util/utils.ts";
-import { Channel, getChannels, getGuild, getMember, Guild } from "../../deps.ts";
+import { GatewayPayload, getChannels, getGuild, getMember, Guild } from "../../deps.ts";
 const dispatch_local_storage = new Set<BigInt>();
 
-Bot.events.dispatchRequirements = async (bot, payload) => {
-  if (!bot.fullyReady) return;
+Bot.events.dispatchRequirements = async (_, payload: GatewayPayload) => {
+  if (!Bot.fullyReady) return;
 
   // If the payload is already in the set, we don't need to dispatch it again
   if (payload.t && ["GUILD_CREATE", "GUILD_DELETE"].includes(payload.t)) return;
 
   const id = snowflakeToBigint(
-    (payload.t && ["GUILD_UPDATE"].includes(data.t)
+    (payload.t && ["GUILD_UPDATE"].includes(payload.t)
       ? // deno-lint-ignore no-explicit-any
         (payload.d as any)?.id
       : // deno-lint-ignore no-explicit-any
         (payload.d as any)?.guild_id) ?? "",
   );
 
-  if (!id || bot.activeGuildIds.has(id)) return;
+  if (!id || Bot.activeGuildIds.has(id)) return;
 
   // If this guild is in cache, it has not been swept, and we can cancel
-  if (bot.guilds.has(id)) {
+  if (Bot.guilds.has(id)) {
     log.info(`Cancelling dispatch for ${id}`);
-    bot.activeGuildIds.add(id);
+    Bot.activeGuildIds.add(id);
     return;
   }
 
   // If this guild is in the local storage, we don't need to dispatch it again
   if (dispatch_local_storage.has(id)) {
     log.info(`[DISPATCH] New Guild ID already being processed: ${id} in ${payload.t} event`);
-    let runs: number = 0;
+    let runs = 0;
     do {
       await delay(1000);
       ++runs;
@@ -42,11 +42,10 @@ Bot.events.dispatchRequirements = async (bot, payload) => {
   dispatch_local_storage.add(id);
 
   // New guild id has appeared, fetch all relevant data
-  log.info(`[DISPATCH] New Guild ID has appeared: ${id} in ${data.t} event`);
+  log.info(`[DISPATCH] New Guild ID has appeared: ${id} in ${payload.t} event`);
 
-  const rawGuild = (await getGuild(id, {
+  const rawGuild = (await getGuild(Bot, id, {
     counts: true,
-    addToCache: false,
   }).catch(log.info)) as Guild | undefined;
 
   if (!rawGuild) {
@@ -57,31 +56,17 @@ Bot.events.dispatchRequirements = async (bot, payload) => {
   log.info(`[DISPATCH] Guild ID ${id} has been found. ${rawGuild.name}`);
 
   const [channels, botMember] = await Promise.all([
-    getChannels(id, false),
-    getMember(id, botId, { force: true }),
+    getChannels(Bot, id),
+    getMember(Bot, id, Bot.id),
   ]).catch((error) => {
     log.info(error);
     return [];
   });
 
   if (!botMember || !channels) {
-    processing.delete(id);
+    dispatch_local_storage.delete(id);
     return log.info(`[DISPATCH] Guild ID ${id} Name: ${rawGuild.name} failed. Unable to get botMember or channels`);
   }
-
-  const guild = await structures.createDiscordenoGuild(rawGuild, shardID);
-
-  // Add to local storage
-  bot.guilds.set(id, guild);
-  bot.dispatchedGuildIDs.delete(id);
-  channels.forEach((channel: Channel) => {
-    bot.dispatchedChannelIDs.delete(channel.id);
-    cache.channels.set(channel.id, channel);
-  });
-
-  dispatch_local_storage.delete(id);
-
-  log.info(`[DISPATCH] Guild ID ${id} Name: ${guild.name} completely loaded.`);
 };
 
 // Events that have
@@ -126,7 +111,7 @@ Bot.events.dispatchRequirements = async (bot, payload) => {
  */
 
 export function sweepInactiveGuildsCache() {
-  for (const guild of cache.guilds.values()) {
+  for (const guild of Bot.guilds.values()) {
     if (Bot.activeGuildIDs.has(guild.id)) continue;
 
     // This is inactive guild. Not a single thing has happened for least 30 minutes.
@@ -136,7 +121,7 @@ export function sweepInactiveGuildsCache() {
   }
 
   // Remove all channel if they were dispatched
-  Bot.channels.forEach((channel: Channel) => {
+  Bot.channels.forEach((channel) => {
     if (!Bot.dispatchedGuildIDs.has(channel.guildId)) return;
 
     Bot.channels.delete(channel.id);
@@ -144,5 +129,5 @@ export function sweepInactiveGuildsCache() {
   });
 
   // Reset activity for next interval
-  bot.activeGuildIDs.clear();
+  Bot.activeGuildIDs.clear();
 }

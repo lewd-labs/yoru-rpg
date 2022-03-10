@@ -14,7 +14,7 @@ Bot.events.ready = (_, payload) => {
 };
 
 // This function lets you run custom code when all your bots shards are online.
-function botFullyReady() {
+async function botFullyReady() {
   // log.info(`Loaded ${bot.arguments.size} Argument(s)`);
   log.info(`Loaded ${Bot.commands.size} Command(s)`);
   log.info(`Loaded ${Object.keys(Bot.events).length} Event(s)`);
@@ -23,7 +23,7 @@ function botFullyReady() {
   // log.info(`Loaded ${Bot.tasks.size} Task(s)`);
 
   // Special task which should only run every hour AFTER STARTUP
-  setInterval(sweepInactiveGuildsCache, Milliseconds.HOUR);
+  setInterval(sweepInactiveGuildsCache, Milliseconds.Hour);
 
   Bot.gateway.presence = {
     status: "online",
