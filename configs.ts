@@ -8,6 +8,8 @@ export interface Config {
   token: string;
   botId: bigint;
   invite_url: string;
+  applicationId: bigint;
+  development_mode: boolean;
 }
 
 export const configs = {
@@ -19,6 +21,8 @@ export const configs = {
   devGuildId: BigInt(env.DEV_GUILD_ID!),
   invite_url:
     "https://discord.com/api/oauth2/authorize?client_id=946398697254703174&permissions=466812794944&scope=bot%20applications.commands",
+  applicationId: BigInt(946398697254703174n),
+  development_mode: true,
 };
 
 export const MISSING_TRANSLATION_WEBHOOK = env.MISSING_TRANSLATION_WEBHOOK ||
