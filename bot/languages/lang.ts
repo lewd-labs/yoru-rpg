@@ -1,13 +1,13 @@
-import english from "./locals/english.ts"
+import english from "./locals/english.ts";
 
 const languages: Record<string, Language> = {
-    english,
+  english,
 };
 
 export default languages;
 
 export type Language = Record<
-    string,
-    // deno-lint-ignore no-explicit-any
-    string | string[] | ((...args: any[]) => string)
-    >;
+  string,
+  // deno-lint-ignore no-explicit-any
+  string | string[] | ((...args: any[]) => string)
+>;
