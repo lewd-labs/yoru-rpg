@@ -10,6 +10,12 @@ export interface Config {
   invite_url: string;
   applicationId: bigint;
   development_mode: boolean;
+  userIds: {
+    botSupporters: string[]
+    botDevs: string[]
+    botOwners: string[]
+  }
+  prefix: string;
 }
 
 export const configs = {
@@ -33,6 +39,7 @@ export const configs = {
     // The user ids who have complete 100% access to your bot
     botOwners: [] as string[],
   },
+  prefix: "y!",
 };
 
 export const MISSING_TRANSLATION_WEBHOOK = env.MISSING_TRANSLATION_WEBHOOK ||

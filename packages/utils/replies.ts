@@ -1,4 +1,9 @@
-import { Bot, DiscordenoInteraction, InteractionApplicationCommandCallbackData, InteractionResponseTypes } from "@deps";
+import {
+  Bot,
+  DiscordenoInteraction,
+  InteractionApplicationCommandCallbackData,
+  InteractionResponseTypes,
+} from "../../deps.ts";
 
 export async function replyToInteraction(
   bot: Bot,

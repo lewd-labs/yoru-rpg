@@ -1,10 +1,13 @@
 import { ApplicationCommandOption, ApplicationCommandTypes, DiscordenoInteraction, Permission } from "../../deps.ts";
 import { BotClient } from "@bot";
 import { PermissionLevelHandlers } from "../../packages/permissions/mod.ts";
+import { ArgumentDefinition } from "./command_types.ts";
 
-export interface ICommand {
+export interface ICommand<T extends readonly ArgumentDefinition[]> {
   /** The name of this command. */
   name: string;
+  /** The aliases for the command */
+  aliases?: string[];
   /** What does this command do? */
   description: string;
   /** The type of command this is. */
@@ -27,21 +30,24 @@ export interface ICommand {
   nsfw?: boolean;
   /** Dm only by default false */
   dmOnly?: boolean;
+  /** Whether the command should only be available in guilds. Default: false */
+  guildOnly?: boolean;
   /** Whether this slash command should be enabled right now. Defaults to true. */
   enabled?: boolean;
   permissionLevels?:
     | (keyof typeof PermissionLevelHandlers)[]
     | ((
       data: DiscordenoInteraction,
-      command: ICommand,
+      command: ICommand<any>,
     ) => boolean | Promise<boolean>);
   botServerPermissions?: Permission[];
   botChannelPermissions?: Permission[];
   userServerPermissions?: Permission[];
   userChannelPermissions?: Permission[];
+  /** The arguments for this command */
+  arguments?: T;
 }
-
-export type subCommand = Omit<ICommand, "subcommands">;
+export type subCommand = Omit<ICommand<any>, "subcommands">;
 export type subCommandGroup = {
   name: string;
   subCommands: subCommand[];
