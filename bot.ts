@@ -13,6 +13,9 @@ import {
 import { ICommand } from "@interfaces";
 import { Language } from "./bot/languages/lang.ts";
 import { log } from "@utils";
+import {_runningTaskInterface, Task} from "./interfaces/bot/task.ts";
+import {ButtonCollector, MessageCollector, ReactionCollector} from "./interfaces/bot/collectors.ts";
+import {Monitor} from "./interfaces/bot/monitor.ts";
 
 // MAKE THE BASIC BOT OBJECT
 export const bot = enableCachePlugin(
@@ -45,22 +48,24 @@ export interface BotClient extends BotWithCache<BotWithHelpersPlugin> {
     string,
     (
       message: DiscordenoMessage,
-      // deno-lint-ignore no-explicit-any
       command: ICommand,
     ) => Promise<boolean> | boolean
   >;
   activeGuildIDs: Set<bigint>;
   dispatchedGuildIDs: Set<bigint>;
   dispatchedChannelIDs: Set<bigint>;
-  // messageCollectors:  Collection<bigint, MessageCollector>,
-  // reactionCollectors:  Collection<bigint, ReactionCollector>,
-  // buttonCollectors:  Collection<bigint, ButtonCollector>,
+  messageCollectors:  Collection<bigint, MessageCollector>,
+  reactionCollectors:  Collection<bigint, ReactionCollector>,
+  buttonCollectors:  Collection<bigint, ButtonCollector>,
+  monitors: Collection<string, Monitor>,
+  tasks: Collection<string, Task>,
+  runningTask: _runningTaskInterface
 }
 
-// THIS IS THE BOT YOU WANT TO USE EVERYWHERE IN YOUR CODE! IT HAS EVERYTHING BUILT INTO IT!
+// The source of all magic!
 export const Bot = bot as BotClient;
 
-/** The bots collections, addons, and custom helpers */
+/** Init to all our interface bot values */
 Bot.log = log;
 Bot.commands = new Collection();
 Bot.languages = new Collection();
@@ -69,3 +74,9 @@ Bot.inhibitors = new Collection();
 Bot.activeGuildIDs = new Set();
 Bot.dispatchedGuildIDs = new Set();
 Bot.dispatchedChannelIDs = new Set();
+Bot.monitors = new Collection();
+Bot.tasks = new Collection();
+Bot.runningTask = { initialTimeouts: [] as number[], intervals: [] as number[] }
+Bot.messageCollectors = new Collection();
+Bot.reactionCollectors = new Collection();
+Bot.buttonCollectors = new Collection();

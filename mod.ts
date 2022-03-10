@@ -12,6 +12,9 @@ await Promise.all(
     "./bot/commands",
     "./bot/events",
     "./bot/languages",
+    // "./bot/inhibitors",
+    "./bot/task",
+    "./bot/monitors",
   ].map((path: string) => importDirectory(Deno.realPathSync(path))),
 );
 await fileLoader();
