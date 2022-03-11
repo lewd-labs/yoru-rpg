@@ -32,14 +32,14 @@ export async function needMessage(memberId: bigint, channelId: bigint, options?:
     createdAt: Date.now(),
     filter: options?.filter || ((msg) => memberId === msg.authorId),
     amount: options?.amount || 1,
-    duration: options?.duration || Milliseconds.MINUTE * 5,
+    duration: options?.duration || Milliseconds.Minute * 5,
   });
 
   return (options?.amount || 1) > 1 ? messages : messages[0];
 }
 
 export function collectMessages(options: CollectMessagesOptions): Promise<DiscordenoMessage[]> {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve: any, reject) => {
     Bot.messageCollectors
       .get(options.key)
       ?.reject("A new collector began before the user responded to the previous one.");
@@ -71,7 +71,7 @@ export async function needReaction(memberId: bigint, messageId: bigint, options?
     createdAt: Date.now(),
     filter: options?.filter || ((userId) => memberId === userId),
     amount: options?.amount || 1,
-    duration: options?.duration || Milliseconds.MINUTE * 5,
+    duration: options?.duration || Milliseconds.Minute * 5,
   });
 
   return (options?.amount || 1) > 1 ? reactions : reactions[0];
@@ -79,10 +79,10 @@ export async function needReaction(memberId: bigint, messageId: bigint, options?
 
 export function collectReactions(options: CollectReactionsOptions): Promise<string[]> {
   return new Promise((resolve, reject) => {
-    bot.reactionCollectors
+    Bot.reactionCollectors
       .get(options.key)
       ?.reject("A new collector began before the user responded to the previous one.");
-    bot.reactionCollectors.set(options.key, {
+    Bot.reactionCollectors.set(options.key, {
       ...options,
       reactions: [] as string[],
       resolve,
@@ -92,12 +92,12 @@ export function collectReactions(options: CollectReactionsOptions): Promise<stri
 }
 
 export function processReactionCollectors(
-  message: DiscordenoMessage | { id: string },
+  message: DiscordenoMessage,
   emoji: Partial<Emoji>,
   userId: bigint,
 ) {
   // Ignore bot reactions
-  if (userId === botId) return;
+  if (userId === Bot.id) return;
 
   const emojiName = emoji.id || emoji.name;
   if (!emojiName) return;
@@ -142,7 +142,7 @@ export async function needButton(memberId: bigint, messageId: bigint, options?: 
     createdAt: Date.now(),
     filter: options?.filter || ((_msg, member) => (member ? memberId === member.id : true)),
     amount: options?.amount || 1,
-    duration: options?.duration || Milliseconds.MINUTE * 5,
+    duration: options?.duration || Milliseconds.Minute * 5,
   });
 
   return (options?.amount || 1) > 1 ? buttons : buttons[0];
@@ -167,7 +167,7 @@ export async function processButtonCollectors(data: Omit<ComponentInteraction, "
   if (!data.message) return;
 
   // If this message is not pending a button response, we can ignore
-  const collector = bot.buttonCollectors.get(member ? member.id : snowflakeToBigint(data.message.id));
+  const collector = Bot.buttonCollectors.get(member ? member.id : snowflakeToBigint(data.message.id));
   if (!collector) return;
 
   // This message is a response to a collector. Now running the filter function.
@@ -178,7 +178,7 @@ export async function processButtonCollectors(data: Omit<ComponentInteraction, "
   // If the necessary amount has been collected
   if (collector.amount === 1 || collector.amount === collector.buttons.length + 1) {
     // Remove the collector
-    bot.buttonCollectors.delete(snowflakeToBigint(data.message.id));
+    Bot.buttonCollectors.delete(snowflakeToBigint(data.message.id));
     // Resolve the collector
     return collector.resolve([
       ...collector.buttons,
